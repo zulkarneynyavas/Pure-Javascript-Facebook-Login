@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Facebook Login</title>
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<button id="LoginWithFacebook" onclick="loginorout()" disabled="disabled">Wait..</button>
+		<script type="text/javascript">
+		var b = document.getElementById('LoginWithFacebook'),
+			h = b.innerHTML;
+			c = false;
+			
+		(function(d, s, id) {
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) {return;}
+			js = d.createElement(s); js.id = id;
+			js.src = "//connect.facebook.net/tr_TR/sdk.js";
+			fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+
+		window.fbAsyncInit = function() {
+			FB.init({
+				appId	: '312878059137722',
+				cookie	: true,
+				xfbml	: true,
+				version	: 'v2.8'
+			});
+			FB.getLoginStatus(function(r) {
+				status(r);
+			});
+		};
+
+		function loginorout() {
+			b.disabled = true;
+			b.innerHTML = h;
+			if (c == false) {
+				FB.login(function(r) {
+					status(r);
+				});
+			} else {
+				FB.logout(function(r) {
+					status(r);
+				});
+			}
+		}
+
+		function status(a) {
+			setTimeout(function() {
+				switch (a.status) {
+					case 'connected':
+						FB.api('/me', 'GET', {fields: 'first_name,last_name,name,id'}, function(q) {
+							b.innerHTML = 'You logged as ' + q.name + '. Please click this button and logout';
+						});
+						c = true;
+					break;
+					case 'not_authorized':
+						b.innerHTML = 'You not authorized';
+						c = false;
+					break;
+					default:
+						b.innerHTML = 'You are now logout. Please click this button and login';
+						c = false;
+				}
+				enablebutton(b);
+			}, 1000);
+		}
+
+		function enablebutton(a) {
+			setTimeout(function() {
+				a.disabled = false;
+			}, 1000);
+		}
+		</script>
+	</body>
+</html>
